@@ -1,22 +1,29 @@
-const readline = require('readline-sync')
+const input = require('./input/input')
+const breakContentIntoSentences = require('./utils/stringUtils').breakContentIntoSentences
 
-function start() {
-    const content = {}
-
-    content.searchTerm = askAndReturnSearchTerm()
-    content.prefix = askAndReturnPrefix()
+const robots = {
+    text: require('./robots/text')
 }
 
-function askAndReturnSearchTerm() {
-    return readline.question('Type a Wikipedia search term: ')
-}
+async function start() {
+    const content = input()
 
-function askAndReturnPrefix() {
-    const prefixes = ['What is', 'Who is', 'The history of']
+    content.sourceContentSanitize = await robots.text(content)
+    
+    const sentences = await breakContentIntoSentences(content.sourceContentSanitize)
 
-    const selectedPredixIndex = readline.keyInSelect(prefixes)
+    content.sentences = []
+    
+    sentences.forEach(sentence => {
+        content.sentences.push({
+            text: sentence,
+            keywords: [],
+            images: []
+        })
+    })
 
-    return prefixes[selectedPredixIndex]
+    console.log(content.sentences)
 }
 
 start()
+
