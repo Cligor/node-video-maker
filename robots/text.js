@@ -1,4 +1,5 @@
 const algorithmia = require('algorithmia')
+const stringUtils = require('../utils/stringUtils')
 
 async function robot(content) {
     const wikipediaContent = await fetchContentFromWikipedia(content)
@@ -18,38 +19,10 @@ async function fetchContentFromWikipedia(content) {
 }
 
 async function sanitizeContent(content) {
-    const sanitizeText = await removeBlankLines(content)
-    const sanitezeMarkdownText = await removeMarkdown(sanitizeText).join(' ')
+    const sanitizeText = await stringUtils.removeBlankLines(content)
+    const sanitezeMarkdownText = await stringUtils.removeMarkdown(sanitizeText).join(' ')
 
-    return removeDatesInParenteses(sanitezeMarkdownText)
-}
-
-function removeBlankLines(text) {
-    const allLines = text.split('\n')
-
-    const withoutBlankLines = allLines.filter((line) => {
-        if (line.trim().length === 0)
-            return false
-
-        return true
-    })
-
-    return withoutBlankLines
-}
-
-function removeMarkdown(lines) {
-    const withoutMarkdown = lines.filter((line) => {
-        if (line.trim().startsWith('=')) 
-            return false
-        
-        return true
-    })
-
-    return withoutMarkdown
-}
-
-function removeDatesInParenteses(text) {
-    return text.replace(/\((?:\([^()]*\)|[^()])*\)/gm, '').replace(/ /g, ' ')
+    return stringUtils.removeDatesInParenteses(sanitezeMarkdownText)
 }
 
 module.exports = robot
